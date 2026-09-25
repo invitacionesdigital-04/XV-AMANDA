@@ -8,37 +8,62 @@ let enableMusic = false;
 
 // Funciones globales para los botones del modal
 function enterWithMusicClick() {
-    // console.log('Función enterWithMusicClick() ejecutada');
-    enableMusic = true;
     const modal = document.getElementById('welcomeModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
+    if (modal) modal.style.display = 'none';
+    startMusicFromGesture();
+}
 
-    // El player se precarga desde DOMContentLoaded (ver loadYouTubeAPI más abajo),
-    // así que si ya está listo llamamos playVideo() de inmediato, dentro del mismo
-    // tick del click. Eso es justo lo que iOS Safari exige para permitir el audio;
-    // si el player se crea o se reproduce de forma asíncrona (fuera del gesto del
-    // usuario), iOS lo bloquea en silencio y por eso antes no sonaba en iPhone.
+// Arranca la música de forma síncrona dentro del toque del usuario
+// (requisito de iOS/Android/Chrome para que el audio se escuche).
+function startMusicFromGesture() {
+    enableMusic = true;
+    const musicPlayer = document.getElementById('musicPlayer');
+    if (musicPlayer) musicPlayer.style.display = 'block';
+
     if (playerReady && player) {
-        document.getElementById('musicPlayer').style.display = 'block';
-        player.unMute();
-        player.setVolume(100);
-        player.playVideo();
+        try {
+            player.unMute();
+            player.setVolume(100);
+            player.playVideo();
+        } catch (e) {}
         isPlaying = true;
         updateMusicIcon();
-        // En iOS/Safari a veces el primer playVideo() no arranca el audio
-        // aunque sí "conecta" el gesto; reintentamos una vez, todavía
-        // dentro del mismo ciclo de interacción del usuario.
+        // Reintento dentro del mismo ciclo de interacción (Safari a veces lo necesita)
         setTimeout(() => {
             if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() !== 1) {
                 player.unMute();
                 player.playVideo();
             }
         }, 300);
+    } else {
+        // Conexión lenta: el reproductor aún no está listo. En cuanto esté,
+        // onPlayerReady intentará reproducir, y además el siguiente toque en
+        // cualquier parte de la página la arranca (por si el navegador bloqueó
+        // el primer intento por no venir de un gesto).
+        armNextGestureFallback();
     }
-    // Si el player todavía no está listo (conexión lenta), onPlayerReady se
-    // encarga de reproducir apenas termine de inicializar.
+}
+
+let gestureFallbackArmed = false;
+function armNextGestureFallback() {
+    if (gestureFallbackArmed) return;
+    gestureFallbackArmed = true;
+    const handler = () => {
+        if (!enableMusic) return cleanup();
+        if (playerReady && player && player.getPlayerState() !== 1) {
+            player.unMute();
+            player.setVolume(100);
+            player.playVideo();
+            isPlaying = true;
+            updateMusicIcon();
+        }
+        if (playerReady) cleanup();
+    };
+    const cleanup = () => {
+        ['touchend', 'click', 'keydown'].forEach(ev => document.removeEventListener(ev, handler, true));
+        gestureFallbackArmed = false;
+    };
+    ['touchend', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, handler, true));
 }
 
 function enterWithoutMusicClick() {
@@ -60,28 +85,8 @@ function setupModalButtons() {
 
     if (enterWithMusic) {
         enterWithMusic.onclick = function() {
-            // console.log('Botón CON música clickeado');
-            enableMusic = true;
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            // Mismo arreglo que en enterWithMusicClick: reproducir de forma
-            // síncrona dentro del click si el player ya está precargado.
-            if (playerReady && player) {
-                const musicPlayer = document.getElementById('musicPlayer');
-                if (musicPlayer) musicPlayer.style.display = 'block';
-                player.unMute();
-                player.setVolume(100);
-                player.playVideo();
-                isPlaying = true;
-                updateMusicIcon();
-                setTimeout(() => {
-                    if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() !== 1) {
-                        player.unMute();
-                        player.playVideo();
-                    }
-                }, 300);
-            }
+            if (modal) modal.style.display = 'none';
+            startMusicFromGesture();
         };
     }
 
@@ -135,10 +140,13 @@ function loadYouTubeAPI() {
 function initializeYouTubePlayer() {
     if (player) return; // ya inicializado, evita crear el player dos veces
 
+    const vars = {};
+    if (/^https?:/.test(window.location.protocol)) vars.origin = window.location.origin;
+
     player = new YT.Player('youtube-player', {
         height: '1',
         width: '1',
-        videoId: 'vwp1yxtcD7I',
+        videoId: '-p0GD80gNjw',
         playerVars: {
             autoplay: 0,
             controls: 0,
@@ -150,7 +158,8 @@ function initializeYouTubePlayer() {
             rel: 0,
             showinfo: 0,
             iv_load_policy: 3,
-            playlist: 'vwp1yxtcD7I'
+            playlist: '-p0GD80gNjw',
+            ...vars
         },
         events: {
             'onReady': onPlayerReady,
@@ -172,7 +181,7 @@ function onPlayerReady(event) {
     // Caso borde: el usuario ya hizo click en "con música" antes de que el
     // player terminara de inicializar (ej. conexión lenta). Lo reproducimos
     // apenas esté listo.
-    if (enableMusic && !isPlaying) {
+    if (enableMusic && event.target.getPlayerState() !== 1) {
         if (musicPlayer) musicPlayer.style.display = 'block';
         event.target.unMute();
         event.target.setVolume(100);
