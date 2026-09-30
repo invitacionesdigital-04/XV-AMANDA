@@ -1894,3 +1894,153 @@ button[class*="carousel"] {
 .hero-text .hero-sub,
 .hero-text .scroll-indicator { animation: heroSubIn 1.4s ease 0.4s both; }
 @keyframes heroSubIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* =========================================================
+   Portada: solo el nombre sobre fondo verde esmeralda
+   ========================================================= */
+.hero-section {
+    background-image:
+        radial-gradient(rgba(226, 201, 140, 0.16) 1px, transparent 1.4px),
+        radial-gradient(ellipse at 50% 42%, #2F6B4B 0%, #1F4A33 45%, #112B1D 100%) !important;
+    background-size: 26px 26px, cover !important;
+    background-position: 0 0, center !important;
+}
+.hero-overlay {
+    background: radial-gradient(ellipse at 50% 50%, rgba(226, 201, 140, 0.14) 0%, transparent 55%) !important;
+}
+.hero-frame {
+    position: absolute;
+    inset: calc(18px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    border: 1px solid rgba(226, 201, 140, 0.55);
+    outline: 1px solid rgba(226, 201, 140, 0.25);
+    outline-offset: 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+}
+.bottom-garland {
+    position: absolute;
+    left: 50%;
+    bottom: -22px;
+    transform: translateX(-50%) rotate(180deg);
+    width: min(520px, 78vw);
+    z-index: 3;
+    pointer-events: none;
+}
+.bottom-garland img { width: 100%; height: auto; display: block; }
+
+.hero-text .names {
+    font-size: clamp(5.5rem, 22vw, 10rem) !important;
+    line-height: 1.1;
+    background: var(--oro-grad);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    text-shadow: none !important;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
+    padding: 0 0.15em;
+    animation: nameIn 1.6s cubic-bezier(.22,.61,.36,1) both, goldShine 6s ease-in-out 1.6s infinite;
+}
+.hero-text .names::after {
+    background: linear-gradient(90deg, transparent, var(--oro-claro), transparent) !important;
+}
+@keyframes nameIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); filter: blur(6px) drop-shadow(0 4px 14px rgba(0,0,0,.45)); }
+    to { opacity: 1; transform: none; filter: drop-shadow(0 4px 14px rgba(0,0,0,.45)); }
+}
+@keyframes goldShine {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* =========================================================
+   Sin galería: la alternancia sigue crema / verde
+   Falta (crema) · Mis XV (verde) · Fiesta (crema)
+   Regalos (verde) · Confirmación (crema) · Pie (verde)
+   ========================================================= */
+.party-section,
+.rsvp-section { background-color: var(--crema) !important; color: #2E3A30; }
+.gifts-section,
+.footer { background-color: var(--verde) !important; }
+
+.party-section .section-title,
+.rsvp-section .section-title { color: var(--verde) !important; }
+.party-section .section-subtitle,
+.rsvp-section .section-subtitle { color: #4F5B50 !important; }
+.party-card { background-color: #FFFDF8 !important; }
+
+.gifts-section .section-title { color: var(--oro-claro) !important; }
+.gifts-section .section-subtitle { color: #F4EAD2 !important; }
+.gifts-section .btn-wedding {
+    background: var(--oro-grad) !important;
+    color: #1B3A28 !important;
+    border: 2px solid #F4EAD2 !important;
+}
+
+.rsvp-section .whatsapp-icon svg { fill: var(--verde) !important; color: var(--verde) !important; }
+.rsvp-section .btn-wedding {
+    background: var(--verde) !important;
+    color: #F4EAD2 !important;
+    border: 2px solid var(--oro) !important;
+}
+
+.footer { border-top: none; }
+.footer-content p { color: #F4EAD2 !important; }
+.footer-content h3 { color: var(--oro-claro) !important; }
+.footer-date { color: var(--oro-claro) !important; }
+
+.hero-text .names { font-size: clamp(6.5rem, 27vw, 11rem) !important; }
+.top-garland { top: -14px !important; width: min(560px, 80vw) !important; }
+
+/* Portada: tiara + MIS XV AÑOS + nombre */
+.hero-crown {
+    width: clamp(110px, 30vw, 170px);
+    height: auto;
+    margin: 0 auto 0.4rem;
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+    animation: nameIn 1.2s cubic-bezier(.22,.61,.36,1) both;
+}
+.hero-mis,
+.hero-anos {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5em;
+    padding-left: 0.5em;
+    font-size: clamp(1.3rem, 5vw, 1.9rem) !important;
+    line-height: 1;
+    color: #F4EAD2 !important;
+    margin: 0 !important;
+    animation: nameIn 1.2s cubic-bezier(.22,.61,.36,1) .2s both;
+}
+.hero-xv {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(4.2rem, 19vw, 7.5rem) !important;
+    line-height: 1 !important;
+    letter-spacing: 0.04em;
+    margin: 0.1rem 0 0.2rem !important;
+    background: var(--oro-grad);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+    animation: nameIn 1.3s cubic-bezier(.22,.61,.36,1) .3s both, goldShine 6s ease-in-out 1.6s infinite;
+}
+.hero-anos { margin-bottom: 0.6rem !important; animation-delay: .4s; }
+.hero-text .names {
+    font-size: clamp(5rem, 22vw, 9rem) !important;
+    margin-top: 0 !important;
+    animation-delay: .5s, 2s;
+}
+.hero-crown { width: clamp(140px, 42vw, 200px); }
+.hero-xv { font-size: clamp(5rem, 25vw, 8.5rem) !important; }
+.hero-mis, .hero-anos { font-size: clamp(1.5rem, 6vw, 2.1rem) !important; }
+.hero-text .names { font-size: clamp(5.8rem, 26vw, 10rem) !important; }
+
+/* Portada sin arreglos florales (solo quedan los de las secciones) */
+.hero-section .top-garland,
+.hero-section .bottom-garland { display: none !important; }
